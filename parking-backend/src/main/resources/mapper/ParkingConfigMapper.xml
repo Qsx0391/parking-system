@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qsx.parking.dao.mapper.ParkingLotMapper">
+
+    <update id="checkAndReserveSpace">
+        UPDATE sys_parking_lot
+        SET current_spaces = current_spaces - 1
+        WHERE id = 1 AND current_spaces > 0;
+    </update>
+
+    <update id="releaseSpace">
+        UPDATE sys_parking_lot
+        SET current_spaces = current_spaces + 1
+        WHERE id = 1;
+    </update>
+
+</mapper>

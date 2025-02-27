@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qsx.parking.dao.mapper.OperationLogMapper">
+
+    <select id="selectLogRecordPage" resultType="com.qsx.parking.dto.resp.LogRecordQueryRespDTO">
+        SELECT sys_operation_log.id id, username, duration, operation, params, ip, created_at createdAt
+        FROM sys_operation_log, sys_user
+        WHERE sys_operation_log.uid = sys_user.id
+        <if test="requestParam.username != null and requestParam.username != ''">
+            AND username LIKE CONCAT('%', #{recordQuery.username}, '%')
+        </if>
+        <if test="requestParam.operation != null and requestParam.operation != ''">
+            AND operation LIKE CONCAT('%', #{recordQuery.operation}, '%')
+        </if>
+        <if test="requestParam.startedAt != null and requestParam.endedAt != null">
+            AND created_at BETWEEN #{recordQuery.startTime} AND #{recordQuery.endTime}
+        </if>
+        <if test="requestParam.orders != null and requestParam.orders.size() > 0">
+            ORDER BY
+            <foreach collection="requestParam.orders" item="order" separator=",">
+                ${order.fieldName} ${order.direction}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>
