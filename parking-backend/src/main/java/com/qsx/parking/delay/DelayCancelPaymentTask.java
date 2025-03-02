@@ -19,17 +19,12 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DelayUpdatePaymentTask implements Delayed {
+public class DelayCancelPaymentTask implements Delayed {
 
     /**
      * 支付记录ID
      */
     private Long pid;
-
-    /**
-     * 目标状态
-     */
-    private Integer targetStatus;
 
     /**
      * 任务延时时间，单位毫秒

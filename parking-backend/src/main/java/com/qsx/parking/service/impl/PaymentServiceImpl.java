@@ -15,7 +15,7 @@ import com.qsx.parking.dao.mapper.VehicleMapper;
 import com.qsx.parking.dao.entity.PaymentDO;
 import com.qsx.parking.dao.entity.VehicleDO;
 import com.qsx.parking.delay.DelayCancelPaymentManager;
-import com.qsx.parking.delay.DelayUpdatePaymentTask;
+import com.qsx.parking.delay.DelayCancelPaymentTask;
 import com.qsx.parking.dto.req.PaymentPageQueryReqDTO;
 import com.qsx.parking.dto.resp.PaymentInfoRespDTO;
 import com.qsx.parking.dto.resp.PaymentPageQueryRespDTO;
@@ -109,7 +109,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, PaymentDO> im
             vehicleMapper.updateById(updateVehicleDO);
 
             // 添加延迟取消支付任务
-            DelayUpdatePaymentTask delayTask = DelayUpdatePaymentTask.builder()
+            DelayCancelPaymentTask delayTask = DelayCancelPaymentTask.builder()
                     .pid(paymentDO.getId())
                     .expire(paymentDO.getCreatedAt().plusMinutes(exitTimeOut).toInstant(ZoneOffset.of("+8")).toEpochMilli())
                     .build();

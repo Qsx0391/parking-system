@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 @Slf4j(topic = "delay-cancel-payment-manager")
 public class DelayCancelPaymentManager implements CommandLineRunner {
 
-    private final DelayQueue<DelayUpdatePaymentTask> delayQueue = new DelayQueue<>();
+    private final DelayQueue<DelayCancelPaymentTask> delayQueue = new DelayQueue<>();
 
     private final PaymentMapper paymentMapper;
     private final VehicleMapper vehicleMapper;
@@ -37,7 +37,7 @@ public class DelayCancelPaymentManager implements CommandLineRunner {
     @Autowired
     private DelayCancelPaymentManager self;
 
-    public void addTask(DelayUpdatePaymentTask task) {
+    public void addTask(DelayCancelPaymentTask task) {
         delayQueue.put(task);
     }
 
@@ -54,7 +54,7 @@ public class DelayCancelPaymentManager implements CommandLineRunner {
     }
 
     @Transactional
-    protected void executeTask(DelayUpdatePaymentTask task) {
+    protected void executeTask(DelayCancelPaymentTask task) {
         log.info("[延迟取消支付] 开始执行任务，支付id：{}", task.getPid());
 
         PaymentDO paymentDO = paymentMapper.selectById(task.getPid());
