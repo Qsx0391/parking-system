@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS `parking_system` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `parking_system`;
+
 CREATE TABLE `sys_operation_log`
 (
     `id`         BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '日志ID',

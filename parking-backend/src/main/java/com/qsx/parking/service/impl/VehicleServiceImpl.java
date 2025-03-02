@@ -13,6 +13,7 @@ import com.qsx.parking.dao.mapper.PaymentMapper;
 import com.qsx.parking.dao.mapper.VehicleMapper;
 import com.qsx.parking.dao.entity.VehicleDO;
 import com.qsx.parking.dto.req.ParkingRecordPageQueryReqDTO;
+import com.qsx.parking.dto.req.ParkingRecordUpdateReqDTO;
 import com.qsx.parking.dto.resp.ParkingRecordQueryRespDTO;
 import com.qsx.parking.framework.exception.ClientException;
 import com.qsx.parking.framework.page.OrderLambdaPageQueryWrapper;
@@ -102,5 +103,11 @@ public class VehicleServiceImpl extends ServiceImpl<VehicleMapper, VehicleDO> im
 
         IPage<VehicleDO> page = vehicleMapper.selectPage(requestParam.getPage(), wrapper);
         return PageQueryRespDTO.of(page.convert(entity -> BeanUtil.toBean(entity, ParkingRecordQueryRespDTO.class)));
+    }
+
+    @Override
+    public void updateParkingRecord(ParkingRecordUpdateReqDTO requestParam) {
+        VehicleDO vehicleDO = BeanUtil.toBean(requestParam, VehicleDO.class);
+        vehicleMapper.updateById(vehicleDO);
     }
 }

@@ -58,6 +58,36 @@
         </div>
       </n-space>
     </n-card>
+
+    <!-- 编辑对话框 -->
+    <n-modal
+      v-model:show="showEditModal"
+      preset="dialog"
+      title="修改停车记录"
+      positive-text="确认"
+      negative-text="取消"
+      @positive-click="handleEditSubmit"
+      @negative-click="() => showEditModal = false"
+    >
+      <n-form
+        :model="editForm"
+        label-placement="left"
+        label-width="auto"
+        require-mark-placement="right-hanging"
+      >
+        <n-form-item label="车牌号">
+          <n-input v-model:value="editForm.vno" placeholder="请输入车牌号" />
+        </n-form-item>
+        <n-form-item label="入场时间">
+          <n-date-picker
+            v-model:value="editForm.enteredAt"
+            type="datetime"
+            placeholder="请选择入场时间"
+            clearable
+          />
+        </n-form-item>
+      </n-form>
+    </n-modal>
   </div>
 </template>
 
@@ -73,13 +103,27 @@ import {
   NButton,
   NDataTable,
   useMessage,
-  NPagination
+  NPagination,
+  NModal,
+  NForm,
+  NFormItem,
+  useDialog
 } from 'naive-ui'
-import { getParkingRecord } from '@/api/vehicle'
+import { getParkingRecord, updateParkingRecord } from '@/api/vehicle'
 
 const message = useMessage()
+const dialog = useDialog()
 const loading = ref(false)
 const timeRange = ref(null)
+const showEditModal = ref(false)
+const editForm = ref({
+  id: '',
+  vno: '',
+  enteredAt: null
+})
+
+// 获取用户类型
+const userType = ref(localStorage.getItem('userType') === null ? 1 : Number(localStorage.getItem('userType'))) // 默认为普通用户
 
 // 查询条件
 const searchForm = ref({
@@ -138,8 +182,32 @@ const columns = [
       }
       return statusMap[row.status] || '未知状态'
     }
-  }
-]
+  },
+  userType.value === 0 ? {
+    title: '操作',
+    key: 'actions',
+    render(row) {
+      return h(
+        NSpace,
+        {},
+        {
+          default: () => [
+            h(
+              NButton,
+              {
+                size: 'small',
+                type: 'primary',
+                disabled: row.status !== 0, // 只有已入场状态可以修改
+                onClick: () => handleEdit(row)
+              },
+              { default: () => '修改' }
+            )
+          ]
+        }
+      )
+    }
+  } : null
+].filter(Boolean) // 过滤掉null值
 
 // 表格数据
 const tableData = ref([])
@@ -157,7 +225,7 @@ const formatDate = (date) => {
   const hours = String(d.getHours()).padStart(2, '0')
   const minutes = String(d.getMinutes()).padStart(2, '0')
   const seconds = String(d.getSeconds()).padStart(2, '0')
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
 // 查询数据
@@ -224,6 +292,37 @@ const handleSorterChange = (sorter) => {
     }]
   }
   fetchData()
+}
+
+// 处理编辑按钮点击
+const handleEdit = (row) => {
+  editForm.value = {
+    id: row.id,
+    vno: row.vno,
+    enteredAt: row.enteredAt
+  }
+  showEditModal.value = true
+}
+
+// 处理修改提交
+const handleEditSubmit = async () => {
+  try {
+    const response = await updateParkingRecord({
+      id: editForm.value.id,
+      vno: editForm.value.vno,
+      enteredAt: formatDate(editForm.value.enteredAt)
+    })
+    
+    if (response.data.code === '0') {
+      message.success('修改成功')
+      showEditModal.value = false
+      fetchData() // 刷新数据
+    } else {
+      message.error(response.data.message || '修改失败')
+    }
+  } catch (error) {
+    message.error('修改失败')
+  }
 }
 
 // 初始加载

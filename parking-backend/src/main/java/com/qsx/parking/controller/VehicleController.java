@@ -1,10 +1,12 @@
 package com.qsx.parking.controller;
 
 import com.qsx.parking.dto.req.ParkingRecordPageQueryReqDTO;
+import com.qsx.parking.dto.req.ParkingRecordUpdateReqDTO;
 import com.qsx.parking.service.VehicleService;
 import com.qsx.parking.framework.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,4 +45,10 @@ public class VehicleController {
         return Result.success(vehicleService.pageQueryParkingRecord(requestParam));
     }
 
+    @Operation(summary = "修改停车记录")
+    @PostMapping("api/admin/vehicle/record/update")
+    public Result<Object> updateParkingRecord(@RequestBody @Valid ParkingRecordUpdateReqDTO requestParam) {
+        vehicleService.updateParkingRecord(requestParam);
+        return Result.success();
+    }
 }

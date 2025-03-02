@@ -24,3 +24,11 @@ export function getParkingRecord(params) {
     data: params
   })
 }
+
+export function updateParkingRecord(data) {
+  return request({
+    url: '/admin/vehicle/record/update',
+    method: 'post',
+    data
+  })
+}
